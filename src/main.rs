@@ -30,13 +30,16 @@ fn main() {
     loop {
       let mut skipped: u8 = 0;
       'square: for sq in 0..64 {
-        if let Some(b) = bits[sq] && b == BITS_BISHOP[sq] - 1 {
-          skipped += 1;
-          if skipped == 64 {
-            return;
+        if let Some(b) = bits[sq] {
+          if b == BITS_BISHOP[sq] - 1 {
+            skipped += 1;
+            if skipped == 64 {
+              return;
+            }
+            continue 'square;
           }
-          continue 'square;
         }
+
         let bit: u8 = bits[sq].map_or(BITS_BISHOP[sq] + 1, |b| b - 1);
         'magic: for _ in 0..1_000_000{
           let magic = random::<u64>();
@@ -48,8 +51,10 @@ fn main() {
           let mut attacks: Vec<Option<u64>> = vec![None; 1 << bit];
           for i in 0..(1 << BITS_BISHOP[sq]) {
             let index = (magic.wrapping_mul(bishop_blockers[sq][i]) >> (64 - bit)) as usize;
-            if let Some(b) = attacks[index as usize] && b != bishop_slider[sq][i] {
-              continue 'magic;
+            if let Some(b) = attacks[index] {
+              if b != bishop_slider[sq][i] {
+                continue 'magic;
+              }
             }
             attacks[index] = Some(bishop_slider[sq][i]);
           }
@@ -58,6 +63,7 @@ fn main() {
           break 'magic;
         }
       }
+
       if magics.iter().all(|m| m.is_some()) {
         let mut file = File::create("magic_bishop.txt").expect("Unable to create file");
         writeln!(file, "Magics:").unwrap();
@@ -69,9 +75,9 @@ fn main() {
           writeln!(file, "{:?}", s.unwrap()).unwrap();
         }
       }
-
     }
   });
+
   // ROOK
   thread::spawn(||{
     let mut rook_blockers : [Vec<u64>; 64] = array::from_fn(|i| Vec::with_capacity(1 << BITS_ROOK[i]));
@@ -90,13 +96,16 @@ fn main() {
     loop {
       let mut skipped: u8 = 0;
       'square: for sq in 0..64 {
-        if let Some(b) = bits[sq] && b == BITS_ROOK[sq] - 1 {
-          skipped += 1;
-          if skipped == 64 {
-            return;
+        if let Some(b) = bits[sq] {
+          if b == BITS_ROOK[sq] - 1 {
+            skipped += 1;
+            if skipped == 64 {
+              return;
+            }
+            continue 'square;
           }
-          continue 'square;
         }
+
         let bit: u8 = bits[sq].map_or(BITS_ROOK[sq] + 1, |b| b - 1);
         'magic: for _ in 0..1_000_000{
           let magic = random::<u64>();
@@ -108,8 +117,10 @@ fn main() {
           let mut attacks: Vec<Option<u64>> = vec![None; 1 << bit];
           for i in 0..(1 << BITS_ROOK[sq]) {
             let index = (magic.wrapping_mul(rook_blockers[sq][i]) >> (64 - bit)) as usize;
-            if let Some(b) = attacks[index as usize] && b != rook_slider[sq][i] {
-              continue 'magic;
+            if let Some(b) = attacks[index] {
+              if b != rook_slider[sq][i] {
+                continue 'magic;
+              }
             }
             attacks[index] = Some(rook_slider[sq][i]);
           }
@@ -118,6 +129,7 @@ fn main() {
           break 'magic;
         }
       }
+
       if magics.iter().all(|m| m.is_some()) {
         let mut file = File::create("magic_rook.txt").expect("Unable to create file");
         writeln!(file, "Magics:").unwrap();
@@ -129,7 +141,6 @@ fn main() {
           writeln!(file, "{:?}", s.unwrap()).unwrap();
         }
       }
-
     }
   });
 }
