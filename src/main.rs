@@ -13,7 +13,7 @@ mod slider;
 
 fn main() {
   // BISHOP
-  thread::spawn(||{
+  let bishop = thread::spawn(||{
     let mut bishop_blockers : [Vec<u64>; 64] = array::from_fn(|i| Vec::with_capacity(1 << BITS_BISHOP[i]));
     let mut bishop_slider   : [Vec<u64>; 64] = array::from_fn(|i| Vec::with_capacity(1 << BITS_BISHOP[i]));
 
@@ -79,7 +79,7 @@ fn main() {
   });
 
   // ROOK
-  thread::spawn(||{
+  let rook = thread::spawn(||{
     let mut rook_blockers : [Vec<u64>; 64] = array::from_fn(|i| Vec::with_capacity(1 << BITS_ROOK[i]));
     let mut rook_slider   : [Vec<u64>; 64] = array::from_fn(|i| Vec::with_capacity(1 << BITS_ROOK[i]));
 
@@ -143,4 +143,7 @@ fn main() {
       }
     }
   });
+
+  bishop.join().unwrap();
+  rook.join().unwrap();
 }
