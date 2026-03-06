@@ -1,4 +1,4 @@
-pub const MASK_ROOK: [u64; 64 as usize] = {
+pub const MASK_ROOK: [u64; 64] = {
     let mut result: [u64; 64] = [0u64; 64];
     const STEPS: [i8; 4] = [-8, -1, 1, 8];
 
@@ -20,8 +20,16 @@ pub const MASK_ROOK: [u64; 64 as usize] = {
     }
     result
 };
-
-pub const MASK_BISHOP: [u64; 64 as usize] = {
+pub const BITS_ROOK:[u8;64] = {
+    let mut result: [u8;64] = [0u8;64];
+    let mut i = 0;
+    while i < 64 {
+        result[i] = MASK_ROOK[i].count_ones() as u8;
+        i += 1;
+    }
+    result
+};
+pub const MASK_BISHOP: [u64; 64] = {
     let mut result: [u64; 64] = [0u64; 64];
     const STEPS: [i8; 4] = [-9, -7, 7, 9];
 
@@ -40,6 +48,15 @@ pub const MASK_BISHOP: [u64; 64 as usize] = {
         }
         result[sq as usize] ^= 1u64 << sq;
         sq +=1;
+    }
+    result
+};
+pub const BITS_BISHOP:[u8;64] = {
+    let mut result: [u8;64] = [0u8;64];
+    let mut i = 0;
+    while i < 64 {
+        result[i] = MASK_BISHOP[i].count_ones() as u8;
+        i += 1;
     }
     result
 };
